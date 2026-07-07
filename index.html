@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="태국, 프랑스, 이집트, 브라질의 기후·산업·문화를 카드로 탐험하는 지역지리 학습 페이지">
+  <title>지역지리 탐험 카드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* 자연·지리 테마 색상 */
+    :root {
+      --bg-sky: #e8f2f0;
+      --bg-earth: #f2ebe3;
+      --text-primary: #1e3a32;
+      --text-secondary: #5a6b63;
+      --text-muted: #7a8a82;
+      --shadow-soft: rgba(30, 58, 50, 0.08);
+      --shadow-hover: rgba(30, 58, 50, 0.14);
+      --overlay: rgba(22, 42, 36, 0.5);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      background: linear-gradient(165deg, var(--bg-sky) 0%, #eef4f0 45%, var(--bg-earth) 100%);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+    /* 전체 페이지 틀 */
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    /* 제목 · 안내 */
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .header__title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .header__guide {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: var(--text-secondary);
+    }
+    /* 카드 그리드: 모바일 1열 · 넓은 화면 2×2 */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    @media (min-width: 600px) {
+      .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px var(--shadow-soft);
+      padding: 1.35rem 1.25rem 1.25rem;
+      min-height: 168px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-top: 4px solid var(--accent);
+      transition: box-shadow 0.25s ease, transform 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 지역별 포인트색 */
+    .card--thailand { --accent: #2d6a4f; background: linear-gradient(180deg, #f0faf4 0%, #ffffff 40%); }
+    .card--france  { --accent: #4a6fa5; background: linear-gradient(180deg, #f2f6fb 0%, #ffffff 40%); }
+    .card--egypt   { --accent: #c9956a; background: linear-gradient(180deg, #faf5ee 0%, #ffffff 40%); }
+    .card--brazil  { --accent: #3a9d6e; background: linear-gradient(180deg, #eef8f2 0%, #ffffff 40%); }
+
+    .card:hover,
+    .card:focus-visible {
+      box-shadow: 0 10px 28px var(--shadow-hover);
+      transform: translateY(-3px);
+      outline: none;
+    }
+    .card__emoji {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card__title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+
+    .card__summary {
+      font-size: 0.875rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    /* 스크린 리더 전용 (화면에는 숨김) */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* 공유 안내 */
+    .share-guide {
+      margin-top: 2.5rem;
+      padding: 1.25rem 1.35rem;
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 12px;
+      border: 1px solid rgba(30, 58, 50, 0.08);
+    }
+
+    .share-guide__title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.6rem;
+    }
+
+    .share-guide__text {
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+    }
+
+    .share-guide__list {
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      padding-left: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .share-guide__list li {
+      margin-bottom: 0.35rem;
+    }
+
+    .share-guide__btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.1rem;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      background: var(--bg-sky);
+      border: 1px solid #c5d9d2;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      min-height: 44px;
+    }
+
+    .share-guide__btn:hover {
+      background: #dce8e4;
+    }
+
+    .share-guide__feedback {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #2d6a4f;
+      min-height: 1.2em;
+    }
+
+    /* 상세 모달 오버레이 (기본 숨김) */    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal.is-open {
+      display: flex;
+    }
+
+    .modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: var(--overlay);
+      backdrop-filter: blur(3px);
+      animation: fade-in 0.25s ease;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal__panel {
+      position: relative;
+      z-index: 1;
+      background: #ffffff;
+      border-radius: 14px;
+      border-top: 5px solid var(--accent, #2d6a4f);
+      box-shadow: 0 20px 48px rgba(22, 42, 36, 0.18);
+      width: min(520px, 100%);
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 1.75rem;
+      animation: modal-in 0.3s ease;
+    }
+
+    @keyframes modal-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .modal__emoji {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal__title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent, var(--text-primary));
+      margin-bottom: 1rem;
+      padding-right: 2rem;
+    }
+
+    .modal__body p {
+      font-size: 0.925rem;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+    }
+    .modal__body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal__section {
+      margin-bottom: 1rem;
+    }
+
+    .modal__section:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal__label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent, var(--text-primary));
+      background: var(--bg-sky);
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      margin-bottom: 0.35rem;
+    }
+
+    .modal__text {
+      font-size: 0.925rem;
+      line-height: 1.75;
+      color: var(--text-secondary);
+    }
+
+    /* 모달 하단 버튼 */
+    .modal__footer {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid #e8eeeb;
+    }
+
+    .modal__btn {
+      flex: 1;
+      padding: 0.65rem 1rem;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease, opacity 0.2s ease;
+    }
+
+    .modal__btn--close {
+      background: var(--bg-sky);
+      color: var(--text-secondary);
+    }
+
+    .modal__btn--close:hover {
+      background: #dce8e4;
+    }
+
+    .modal__btn--next {
+      background: var(--accent, #2d6a4f);
+      color: #ffffff;
+    }
+
+    .modal__btn--next:hover {
+      opacity: 0.9;
+    }
+
+    .modal__panel.is-switching {
+      animation: modal-switch 0.25s ease;
+    }
+
+    @keyframes modal-switch {
+      from { opacity: 0.6; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal__close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-sky);
+      border: none;
+      border-radius: 50%;
+      font-size: 1rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .modal__close:hover {
+      background: #dce8e4;
+    }
+
+    /* 모바일: 하단 시트형 모달 */
+    @media (max-width: 599px) {
+      .modal {
+        align-items: flex-end;
+        padding: 0;
+      }
+
+      .modal__panel {
+        width: 100%;
+        max-height: 92dvh;
+        border-radius: 16px 16px 0 0;
+        padding: 1.25rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+        animation: modal-slide-up 0.3s ease;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      @keyframes modal-slide-up {
+        from {
+          opacity: 0;
+          transform: translateY(100%);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal__close {
+        top: 0.85rem;
+        right: 0.85rem;
+        width: 2.75rem;
+        height: 2.75rem;
+        font-size: 1.1rem;
+      }
+
+      .modal__title {
+        font-size: 1.2rem;
+        padding-right: 2.75rem;
+      }
+
+      .modal__footer {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .modal__btn {
+        min-height: 48px;
+        font-size: 0.925rem;
+      }
+
+      .page {
+        padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+      }
+    }
+
+    /* 모달 열릴 때 뒤 페이지 스크롤 잠금 */    body.modal-open {
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+
+    <!-- 제목 · 안내 -->
+    <header class="header">
+      <h1 class="header__title">지역지리 탐험 카드</h1>
+      <p class="header__guide">카드를 눌러 지역의 특징을 자세히 살펴보세요.</p>
+    </header>
+
+    <!-- 카드 그리드 영역 -->
+    <section class="card-grid" id="card-grid" aria-label="탐험 카드 목록"></section>
+
+    <!-- 공유 안내 -->
+    <aside class="share-guide" aria-labelledby="share-title">
+      <h2 class="share-guide__title" id="share-title">공유 안내</h2>
+      <p class="share-guide__text">이 페이지를 학생이나 동료 선생님께 나눠 보세요.</p>
+      <ul class="share-guide__list">
+        <li>아래 「주소 복사」 버튼으로 링크를 복사해 메신저·이메일에 붙여 넣기</li>
+        <li>수업 자료로 쓸 때는 <strong>index.html</strong> 파일 자체를 공유</li>
+        <li>학교 LMS(학습 관리 시스템)에 URL 또는 파일 첨부</li>
+      </ul>
+      <button type="button" class="share-guide__btn" id="copy-link-btn" aria-describedby="copy-feedback">
+        📋 주소 복사
+      </button>
+      <span class="share-guide__feedback" id="copy-feedback" role="status" aria-live="polite"></span>
+    </aside>
+
+  </main>
+  <!-- 상세 모달 오버레이 -->
+  <div class="modal" id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc" aria-hidden="true">
+    <div class="modal__backdrop" id="modal-backdrop" aria-hidden="true"></div>
+    <div class="modal__panel" id="modal-panel">
+      <button type="button" class="modal__close" id="modal-close" aria-label="상세 창 닫기">✕</button>
+      <div class="modal__emoji" id="modal-emoji" role="img" aria-label=""></div>
+      <h2 class="modal__title" id="modal-title" tabindex="-1"></h2>
+      <p class="sr-only" id="modal-desc">지역의 기후, 산업, 문화 정보를 보여주는 상세 창입니다.</p>
+      <div class="modal__body" id="modal-body" aria-live="polite"></div>      <div class="modal__footer">
+        <button type="button" class="modal__btn modal__btn--close" id="modal-btn-close">닫기</button>
+        <button type="button" class="modal__btn modal__btn--next" id="modal-btn-next">다음 지역 →</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 탐험 카드 데이터
+    const cardsData = [
+      {
+        name: "태국",
+        emoji: "🇹🇭",
+        flagAlt: "태국 국기",
+        theme: "thailand",        accent: "#2d6a4f",
+        summary: [
+          "연중 덥고 습한 열대 기후로, 우기와 건기가 뚜렷하게 나뉜다.",
+          "쌀·고무·수산물과 관광이 주요 산업이다.",
+          "불교 사원(왓)과 송크란 물축제로 잘 알려져 있다."
+        ]
+      },
+      {
+        name: "프랑스",
+        emoji: "🇫🇷",
+        flagAlt: "프랑스 국기",
+        theme: "france",        accent: "#4a6fa5",
+        summary: [
+          "서쪽은 온화한 해양성 기후, 남부는 지중해성 기후이다.",
+          "항공·자동차·패션·와인 산업이 발달했고, 밀·포도 농업도 유명하다.",
+          "루브르 박물관, 에펠탑, 바게트·치즈·와인 문화가 대표적이다."
+        ]
+      },
+      {
+        name: "이집트",
+        emoji: "🇪🇬",
+        flagAlt: "이집트 국기",
+        theme: "egypt",        accent: "#c9956a",
+        summary: [
+          "대부분이 건조한 사막 기후이며, 나일강 주변만 비옥한 농경지이다.",
+          "면화·쌀·관광(피라미드)과 수에즈 운하가 경제를 이끈다.",
+          "고대 이집트 문명의 유적과 이슬람·코프트 문화가 공존한다."
+        ]
+      },
+      {
+        name: "브라질",
+        emoji: "🇧🇷",
+        flagAlt: "브라질 국기",
+        theme: "brazil",        accent: "#3a9d6e",
+        summary: [
+          "아마존은 연중 고온 다습하고, 중부는 건기와 우기가 번갈아 오는 열대 savanna 지역이다.",
+          "커피·오렌지·쇠고기와 철광석·석유가 주요 산업이다.",
+          "카니발 축제, 축구, 다양한 민족이 어우러진 문화가 특징이다."
+        ]
+      }
+    ];
+
+    // 모달 요소
+    const cardGrid = document.getElementById("card-grid");
+    const modal = document.getElementById("detail-modal");
+    const modalPanel = document.getElementById("modal-panel");
+    const modalBackdrop = document.getElementById("modal-backdrop");
+    const modalClose = document.getElementById("modal-close");
+    const modalBtnClose = document.getElementById("modal-btn-close");
+    const modalBtnNext = document.getElementById("modal-btn-next");
+    const modalEmoji = document.getElementById("modal-emoji");
+    const modalTitle = document.getElementById("modal-title");
+    const modalBody = document.getElementById("modal-body");
+
+    const detailLabels = ["기후", "산업", "문화"];
+    let currentIndex = -1;
+    let lastFocusedCard = null;
+
+    // 카드 요약을 읽기 쉬운 한 줄 설명으로 만들기
+    function getCardDescription(card) {
+      return card.name + ". " + detailLabels.map(function (label, i) {
+        return label + ": " + card.summary[i];
+      }).join(" ");
+    }
+
+    // 카드 그리드에 데이터 표시
+    cardsData.forEach(function (card, index) {
+      const article = document.createElement("article");
+      article.className = "card card--" + card.theme;
+      article.tabIndex = 0;
+      article.setAttribute("role", "button");
+      article.setAttribute("aria-label", card.name + " 탐험 카드, 자세히 보기");
+      article.setAttribute("aria-describedby", "card-desc-" + index);
+      article.dataset.index = index;
+      article.innerHTML =
+        '<div class="card__emoji" role="img" aria-label="' + card.flagAlt + '">' + card.emoji + "</div>" +
+        "<h2 class=\"card__title\">" + card.name + "</h2>" +
+        '<p class="card__summary" id="card-desc-' + index + '">' + card.summary.join(" ") + "</p>" +
+        '<span class="sr-only">' + getCardDescription(card) + "</span>";
+      cardGrid.appendChild(article);
+    });
+    // 모달 내용 채우기
+    function fillModal(index, animate) {
+      const card = cardsData[index];
+      const nextIndex = (index + 1) % cardsData.length;
+      const nextCard = cardsData[nextIndex];
+
+      modalPanel.style.setProperty("--accent", card.accent);
+      modalEmoji.textContent = card.emoji;
+      modalEmoji.setAttribute("aria-label", card.flagAlt);
+      modalTitle.textContent = card.name;
+      modalBody.innerHTML = card.summary.map(function (line, i) {
+        return (
+          '<div class="modal__section">' +
+          '<span class="modal__label" id="modal-label-' + i + '">' + detailLabels[i] + "</span>" +
+          '<p class="modal__text" aria-labelledby="modal-label-' + i + '">' + line + "</p>" +
+          "</div>"
+        );
+      }).join("");
+      modalBtnNext.textContent = "다음: " + nextCard.name + " →";
+      modalBtnNext.setAttribute("aria-label", "다음 지역 " + nextCard.name + " 보기");
+      if (animate) {
+        modalPanel.classList.remove("is-switching");
+        void modalPanel.offsetWidth;
+        modalPanel.classList.add("is-switching");
+      }
+    }
+
+    // 모달 열기
+    function openModal(index) {
+      currentIndex = index;
+      lastFocusedCard = cardGrid.querySelector('[data-index="' + index + '"]');
+      fillModal(index, false);
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+      modalBtnClose.focus();
+    }
+
+    // 모달 닫기
+    function closeModal() {
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+      currentIndex = -1;
+      if (lastFocusedCard) lastFocusedCard.focus();
+    }
+
+    // 다음 지역으로 이동 (마지막이면 처음으로)
+    function goToNextRegion() {
+      currentIndex = (currentIndex + 1) % cardsData.length;
+      fillModal(currentIndex, true);
+      modalTitle.focus();
+    }
+
+    // 카드 클릭 · 키보드로 모달 열기
+    cardGrid.addEventListener("click", function (event) {
+      const cardEl = event.target.closest(".card");
+      if (!cardEl) return;
+      openModal(Number(cardEl.dataset.index));
+    });
+
+    cardGrid.addEventListener("keydown", function (event) {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const cardEl = event.target.closest(".card");
+      if (!cardEl) return;
+      event.preventDefault();
+      openModal(Number(cardEl.dataset.index));
+    });
+
+    // 닫기: ✕ · 닫기 버튼 · 배경 · Esc
+    modalBackdrop.addEventListener("click", closeModal);
+    modalClose.addEventListener("click", closeModal);
+    modalBtnClose.addEventListener("click", closeModal);
+    modalBtnNext.addEventListener("click", goToNextRegion);
+
+    // 패널 클릭 시 배경 닫힘 방지
+    modalPanel.addEventListener("click", function (event) {
+      event.stopPropagation();
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (!modal.classList.contains("is-open")) return;
+      if (event.key === "Escape") closeModal();
+    });
+
+    // 주소 복사 (공유 안내)
+    const copyLinkBtn = document.getElementById("copy-link-btn");
+    const copyFeedback = document.getElementById("copy-feedback");
+
+    copyLinkBtn.addEventListener("click", function () {
+      const url = window.location.href;
+
+      function showFeedback(message) {
+        copyFeedback.textContent = message;
+        setTimeout(function () {
+          copyFeedback.textContent = "";
+        }, 3000);
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () {
+          showFeedback("주소가 복사되었습니다. 메신저나 이메일에 붙여 넣으세요.");
+        }).catch(function () {
+          showFeedback("복사에 실패했습니다. 주소창의 URL을 직접 복사해 주세요.");
+        });
+      } else {
+        showFeedback("브라우저 주소창의 URL을 길게 눌러 복사해 주세요.");
+      }
+    });
+  </script></body>
+</html>
